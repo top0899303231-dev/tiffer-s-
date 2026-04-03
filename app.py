@@ -10,7 +10,7 @@ LINE_ACCESS_TOKEN = os.environ.get('LINE_TOKEN')
 USER_ID = os.environ.get('LINE_USER_ID')
 FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeuSJ5qyiHYO8_atM412MZkqlGDbOY0lk0PY5L2M1CjNh7A3A/formResponse"
 
-# --- 🎨 UI TV MAN SHOPPING - HISTORY EDITION ---
+# --- 🎨 UI TV MAN SHOPPING - WITH USERNAME ---
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html lang="th">
@@ -30,7 +30,7 @@ HTML_TEMPLATE = '''
         .active-page { display: flex !important; flex-direction: column; }
         .product-card, .history-card { background: rgba(30, 0, 60, 0.6); border: 1px solid #44178a; transition: 0.2s; }
         .product-card:active { border-color: #bf40bf; transform: scale(0.98); }
-        .cart-badge { background: #ff00ff; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; position: absolute; top: -5px; right: -5px; font-weight: bold; }
+        .user-tag { background: rgba(191, 64, 191, 0.2); border: 1px solid #bf40bf; padding: 2px 10px; border-radius: 20px; font-size: 10px; color: #ff00ff; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -40,19 +40,19 @@ HTML_TEMPLATE = '''
             <i class="fas fa-shopping-basket text-purple-500 text-6xl animate-pulse mb-4"></i>
             <h1 class="text-3xl font-bold purple-neon">TRIPFER SHOP</h1>
             <div class="grid grid-cols-1 gap-4">
-                <div onclick="selectDevice('Computer')" class="glass-purple p-6 rounded-2xl border-2 border-purple-900 shadow-lg text-lg font-bold">COMPUTER</div>
-                <div onclick="selectDevice('Mobile')" class="glass-purple p-6 rounded-2xl border-2 border-purple-900 border-dashed shadow-lg text-lg font-bold">MOBILE</div>
+                <div onclick="selectDevice('Computer')" class="glass-purple p-6 rounded-2xl border-2 border-purple-900 shadow-lg text-lg font-bold cursor-pointer">COMPUTER</div>
+                <div onclick="selectDevice('Mobile')" class="glass-purple p-6 rounded-2xl border-2 border-purple-900 border-dashed shadow-lg text-lg font-bold cursor-pointer">MOBILE</div>
             </div>
         </div>
     </div>
 
     <div id="loginPage" class="page items-center justify-center p-6">
         <div class="w-full max-w-md glass-purple p-8 rounded-[2.5rem] text-center border-t-4 border-purple-600 shadow-2xl">
-            <h2 class="text-2xl font-bold purple-neon mb-6">เข้าสู่ระบบร้านค้า</h2>
+            <h2 class="text-2xl font-bold purple-neon mb-6">ระบุชื่อเข้าใช้งาน</h2>
             <div class="space-y-4 text-left">
-                <input type="text" id="authName" placeholder="ชื่อลูกค้า" class="w-full p-4 rounded-2xl outline-none bg-black/60 border border-purple-900 text-white">
-                <input type="password" id="authPass" placeholder="รหัสผ่าน" class="w-full p-4 rounded-2xl outline-none bg-black/60 border border-purple-900 text-white text-center tracking-[0.5em]">
-                <button onclick="handleLogin()" class="w-full bg-purple-600 py-5 rounded-2xl font-bold active:scale-95 text-xl mt-2">เปิดร้านค้า 🛒</button>
+                <input type="text" id="authName" placeholder="พิมพ์ชื่อของคุณที่นี่..." class="w-full p-5 rounded-2xl outline-none bg-black/60 border border-purple-900 text-white text-center font-bold text-xl">
+                <input type="password" id="authPass" placeholder="รหัสผ่าน (11384)" class="w-full p-4 rounded-2xl outline-none bg-black/60 border border-purple-900 text-white text-center tracking-[0.5em]">
+                <button onclick="handleLogin()" class="w-full bg-purple-600 py-5 rounded-2xl font-bold active:scale-95 text-xl mt-2">ยืนยันตัวตน 📺</button>
                 <div id="loginError" class="hidden text-red-500 text-xs font-bold mt-2 text-center">รหัสผ่านไม่ถูกต้อง!</div>
             </div>
         </div>
@@ -60,23 +60,20 @@ HTML_TEMPLATE = '''
 
     <div id="mainPage" class="page">
         <nav class="p-5 flex justify-between items-center glass-purple sticky top-0 z-50">
-            <span class="font-bold purple-neon">TRIPFER STORE</span>
+            <div class="flex flex-col">
+                <span class="text-[10px] text-purple-400 font-bold uppercase tracking-widest">Active User</span>
+                <span id="navNameDisplay" class="font-bold purple-neon text-lg">...</span>
+            </div>
             <button onclick="logout()" class="text-red-500 p-2"><i class="fas fa-power-off"></i></button>
         </nav>
         <main class="p-6 space-y-4 max-w-md mx-auto w-full">
-            <div onclick="switchPage('shopPage')" class="glass-purple p-6 rounded-[2rem] flex items-center space-x-5 border-2 border-purple-500 shadow-lg">
-                <div class="w-14 h-14 bg-purple-800 rounded-2xl flex items-center justify-center text-2xl shadow-lg"><i class="fas fa-box-open"></i></div>
-                <div><h3 class="font-bold text-lg text-white">เลือกซื้อสินค้า</h3><p class="text-xs text-purple-400">น็อต สกรู และเครื่องมือ</p></div>
+            <div onclick="switchPage('shopPage')" class="glass-purple p-6 rounded-[2rem] flex items-center space-x-5 border-2 border-purple-500 shadow-lg cursor-pointer">
+                <div class="w-14 h-14 bg-purple-800 rounded-2xl flex items-center justify-center text-2xl shadow-lg"><i class="fas fa-shopping-cart"></i></div>
+                <div><h3 class="font-bold text-lg text-white">ไปที่ร้านค้า</h3><p class="text-xs text-purple-400">เลือกซื้อของเลยคุณ <span class="userNameSpan"></span></p></div>
             </div>
-
-            <div onclick="showHistory()" class="glass-purple p-6 rounded-[2rem] flex items-center space-x-5 border border-purple-900 opacity-90 shadow-lg">
+            <div onclick="showHistory()" class="glass-purple p-6 rounded-[2rem] flex items-center space-x-5 border border-purple-900 opacity-90 shadow-lg cursor-pointer">
                 <div class="w-14 h-14 bg-indigo-800 rounded-2xl flex items-center justify-center text-2xl shadow-lg"><i class="fas fa-history"></i></div>
-                <div><h3 class="font-bold text-lg text-white">ประวัติสั่งซื้อ</h3><p class="text-xs text-indigo-400">รายการที่สั่งไปแล้ว</p></div>
-            </div>
-
-            <div onclick="alert('กำลังเรียกแอดมิน...')" class="glass-purple p-6 rounded-[2rem] flex items-center space-x-5 border border-purple-900 opacity-90 shadow-lg">
-                <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center text-2xl shadow-lg"><i class="fas fa-headset"></i></div>
-                <div><h3 class="font-bold text-lg text-white">ช่วยเหลือ</h3><p class="text-xs text-slate-400">คุยกับแอดมิน</p></div>
+                <div><h3 class="font-bold text-lg text-white">ประวัติสั่งซื้อ</h3><p class="text-xs text-indigo-400">รายการที่คุณสั่งไว้</p></div>
             </div>
         </main>
     </div>
@@ -84,20 +81,18 @@ HTML_TEMPLATE = '''
     <div id="shopPage" class="page">
         <nav class="p-5 flex items-center justify-between glass-purple sticky top-0 z-50">
             <button onclick="switchPage('mainPage')"><i class="fas fa-chevron-left text-purple-400 text-xl"></i></button>
-            <span class="font-bold">รายการสินค้า</span>
+            <div class="user-tag"><i class="fas fa-user mr-1"></i> <span class="userNameSpan"></span></div>
             <div class="relative"><i class="fas fa-shopping-basket text-purple-400 text-2xl"></i><span id="cartCount" class="cart-badge">0</span></div>
         </nav>
         <main class="p-4 grid grid-cols-2 gap-4 max-w-md mx-auto w-full">
             <div class="product-card p-4 rounded-3xl text-center" onclick="addToCart('น็อต M8', 5)">
                 <div class="w-full h-20 bg-purple-900/20 rounded-xl mb-2 flex items-center justify-center text-3xl"><i class="fas fa-nut"></i></div>
                 <h4 class="text-xs font-bold">น็อต M8</h4>
-                <p class="text-purple-400 text-[10px]">5.- / ชิ้น</p>
                 <button class="mt-2 bg-purple-600 text-[9px] px-3 py-1 rounded-full font-bold">+ ลงตะกร้า</button>
             </div>
             <div class="product-card p-4 rounded-3xl text-center" onclick="addToCart('ประแจเลื่อน', 250)">
                 <div class="w-full h-20 bg-purple-900/20 rounded-xl mb-2 flex items-center justify-center text-3xl"><i class="fas fa-wrench"></i></div>
                 <h4 class="text-xs font-bold">ประแจเลื่อน</h4>
-                <p class="text-purple-400 text-[10px]">250.- / ชิ้น</p>
                 <button class="mt-2 bg-purple-600 text-[9px] px-3 py-1 rounded-full font-bold">+ ลงตะกร้า</button>
             </div>
         </main>
@@ -112,10 +107,9 @@ HTML_TEMPLATE = '''
     <div id="historyPage" class="page">
         <nav class="p-5 flex items-center space-x-4 glass-purple sticky top-0 z-50">
             <button onclick="switchPage('mainPage')" class="text-purple-400 text-xl"><i class="fas fa-chevron-left"></i></button>
-            <span class="font-bold purple-neon uppercase tracking-widest">Order History</span>
+            <span class="font-bold purple-neon uppercase tracking-widest">History: <span class="userNameSpan"></span></span>
         </nav>
-        <main id="historyList" class="p-6 space-y-4 max-w-md mx-auto w-full">
-            </main>
+        <main id="historyList" class="p-6 space-y-4 max-w-md mx-auto w-full"></main>
     </div>
 
     <script>
@@ -125,27 +119,33 @@ HTML_TEMPLATE = '''
 
         window.onload = function() {
             const savedUser = localStorage.getItem('tripfer_user');
-            if (savedUser) { currentUser = savedUser; switchPage('mainPage'); }
+            if (savedUser) { updateUserName(savedUser); switchPage('mainPage'); }
         };
+
+        function updateUserName(name) {
+            currentUser = name;
+            document.getElementById('navNameDisplay').innerText = name;
+            document.querySelectorAll('.userNameSpan').forEach(el => el.innerText = name);
+        }
 
         function switchPage(p) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
             document.getElementById(p).classList.add('active-page');
         }
 
-        function selectDevice(t) { switchPage('loginPage'); speak("โหมด " + t); }
+        function selectDevice(t) { switchPage('loginPage'); speak("เลือกโหมด " + t); }
 
         function handleLogin() {
             const user = document.getElementById('authName').value;
             const pass = document.getElementById('authPass').value;
             if(pass === REAL_PASS && user !== "") {
                 localStorage.setItem('tripfer_user', user);
-                currentUser = user;
+                updateUserName(user);
                 switchPage('mainPage');
-                speak("เข้าสู่ระบบสำเร็จ");
+                speak("ยินดีต้อนรับคุณ " + user);
             } else {
                 document.getElementById('loginError').classList.remove('hidden');
-                speak("รหัสผิด");
+                speak("ข้อมูลไม่ถูกต้อง");
             }
         }
 
@@ -160,22 +160,21 @@ HTML_TEMPLATE = '''
             if(cart.length === 0) return;
             const total = cart.reduce((s, i) => s + i.price, 0);
             const items = cart.map(i => i.name).join(', ');
-            const date = new datetime().toLocaleString('th-TH');
+            const date = new Date().toLocaleString('th-TH');
 
-            const order = { items, total, date };
-            
-            // 💾 บันทึกลงเครื่อง (History)
+            // บันทึกประวัติพร้อมชื่อ
+            const order = { buyer: currentUser, items, total, date };
             let history = JSON.parse(localStorage.getItem('tripfer_history') || '[]');
             history.unshift(order);
             localStorage.setItem('tripfer_history', JSON.stringify(history));
 
-            speak("สั่งซื้อเรียบร้อย ยอดรวม " + total + " บาท");
+            speak("คุณ " + currentUser + " สั่งซื้อเรียบร้อย");
 
             try {
                 await fetch('/submit', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ username: currentUser, message: "🛒 ออเดอร์: " + items + " | ยอด: " + total + ".-" })
+                    body: JSON.stringify({ username: currentUser, message: "💰 " + currentUser + " สั่งซื้อ: " + items + " | " + total + ".-" })
                 });
                 alert("สั่งซื้อสำเร็จ!");
                 cart = [];
@@ -188,25 +187,20 @@ HTML_TEMPLATE = '''
         function showHistory() {
             const list = document.getElementById('historyList');
             const history = JSON.parse(localStorage.getItem('tripfer_history') || '[]');
-            
-            list.innerHTML = history.length ? "" : '<p class="text-center text-purple-900 mt-10">ยังไม่มีประวัติการสั่งซื้อ</p>';
-            
+            list.innerHTML = history.length ? "" : '<p class="text-center text-purple-900 mt-10">ยังไม่มีประวัติ</p>';
             history.forEach(order => {
                 list.innerHTML += `
-                    <div class="history-card p-5 rounded-[2rem] border-l-4 border-purple-500 shadow-xl">
+                    <div class="history-card p-5 rounded-[2rem] border-l-4 border-purple-500 shadow-xl mb-4">
                         <div class="flex justify-between items-start mb-2">
-                            <span class="text-[10px] text-purple-400 font-bold uppercase">${order.date}</span>
+                            <span class="text-[10px] text-purple-400 font-bold font-mono">${order.date}</span>
                             <span class="text-green-400 font-bold">${order.total}.-</span>
                         </div>
                         <p class="text-sm text-white font-bold">${order.items}</p>
-                        <div class="mt-3 flex items-center text-[10px] text-purple-300">
-                            <i class="fas fa-check-circle mr-1"></i> สำเร็จ
-                        </div>
+                        <p class="text-[9px] text-purple-500 mt-2">สั่งโดย: ${order.buyer}</p>
                     </div>
                 `;
             });
             switchPage('historyPage');
-            speak("เปิดประวัติการสั่งซื้อ");
         }
 
         function speak(t) {
