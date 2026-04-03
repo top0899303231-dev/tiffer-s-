@@ -5,96 +5,106 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# --- 🛠️ ตั้งค่าระบบ (ดึงค่าจาก Environment Variables) ---
+# --- 🛠️ ตั้งค่าระบบ ---
 LINE_ACCESS_TOKEN = os.environ.get('LINE_TOKEN')
 USER_ID = os.environ.get('LINE_USER_ID')
-
-# --- 🔋 เชื่อมต่อ Google Sheets (ใช้เลข Entry จากฟอร์มช่าง) ---
 FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeuSJ5qyiHYO8_atM412MZkqlGDbOY0lk0PY5L2M1CjNh7A3A/formResponse"
 
-# --- 🎨 UI ทริปเฟอร์ AI Pro (3-in-1: Login, Register, Dashboard) ---
+# --- 🎨 UI TV MAN PURPLE + PERSONAL PAGE ---
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ทริปเฟอร์ AI - PRO SYSTEM 🔋</title>
+    <title>ทริปเฟอร์ AI - TV MAN 📺</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
-        body { font-family: 'Kanit', sans-serif; background: #f0f7ff; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        body { font-family: 'Kanit', sans-serif; background: #0c001a; color: white; }
+        .purple-neon { text-shadow: 0 0 10px #bf40bf, 0 0 20px #bf40bf; }
+        .glass-purple { background: rgba(30, 0, 60, 0.8); backdrop-filter: blur(15px); border: 2px solid #bf40bf; }
         .hidden-page { display: none; }
+        .tv-screen { background: #000; border: 4px solid #5b21b6; position: relative; overflow: hidden; }
+        .crt-line { width: 100%; height: 2px; background: rgba(191, 64, 191, 0.2); position: absolute; animation: scan 3s linear infinite; }
+        @keyframes scan { from { top: 0; } to { top: 100%; } }
     </style>
 </head>
 <body class="min-h-screen">
 
     <div id="loginPage" class="flex items-center justify-center min-h-screen p-6">
-        <div class="w-full max-w-md glass p-8 rounded-[2.5rem] shadow-2xl border border-blue-100">
-            <div class="text-center mb-8">
-                <div class="inline-block p-4 bg-blue-600 rounded-2xl shadow-lg mb-4">
-                    <i class="fas fa-lock text-3xl text-white"></i>
+        <div class="w-full max-w-md glass-purple p-10 rounded-[2.5rem] shadow-[0_0_50px_rgba(191,64,191,0.3)]">
+            <div class="flex flex-col items-center mb-8">
+                <div class="w-24 h-20 tv-screen rounded-lg mb-4 flex items-center justify-center shadow-[0_0_20px_#bf40bf]">
+                    <div class="crt-line"></div>
+                    <i class="fas fa-smile text-purple-500 text-4xl"></i>
                 </div>
-                <h2 id="formTitle" class="text-2xl font-bold text-slate-800 text-blue-700">เข้าสู่ระบบ ทริปเฟอร์ AI</h2>
+                <h2 class="text-2xl font-bold purple-neon">ทริปเฟอร์ AI</h2>
+                <p class="text-purple-300 text-xs mt-2 uppercase tracking-widest">Login to Access</p>
             </div>
             
             <div class="space-y-4">
-                <input type="text" id="authName" placeholder="ชื่อผู้ใช้งาน" class="w-full p-4 bg-blue-50 border border-blue-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                <input type="password" id="authPass" placeholder="รหัสผ่าน" class="w-full p-4 bg-blue-50 border border-blue-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                <div class="relative">
+                    <i class="fas fa-user absolute left-4 top-4 text-purple-400"></i>
+                    <input type="text" id="authName" placeholder="ชื่อผู้ใช้งาน" class="w-full pl-12 pr-4 py-4 bg-purple-900/50 border border-purple-500 rounded-2xl outline-none focus:ring-2 focus:ring-purple-400 text-white placeholder:text-purple-700">
+                </div>
+                <div class="relative">
+                    <i class="fas fa-key absolute left-4 top-4 text-purple-400"></i>
+                    <input type="password" id="authPass" placeholder="รหัสผ่าน" class="w-full pl-12 pr-4 py-4 bg-purple-900/50 border border-purple-500 rounded-2xl outline-none focus:ring-2 focus:ring-purple-400 text-white placeholder:text-purple-700">
+                </div>
                 
-                <button onclick="handleAuth()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 active:scale-95 transition-all">
-                    ตกลง
+                <button onclick="handleLogin()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-5 rounded-2xl shadow-[0_10px_20px_rgba(0,0,0,0.3)] active:scale-95 transition-all text-xl">
+                    เข้าสู่ระบบ 📺
                 </button>
-                <p class="text-center text-sm text-slate-500 mt-4 cursor-pointer hover:text-blue-600" onclick="toggleAuthMode()">
-                    ยังไม่มีบัญชี? <span id="toggleText">ลงทะเบียนที่นี่</span>
-                </p>
             </div>
         </div>
     </div>
 
     <div id="mainPage" class="hidden-page flex flex-col min-h-screen">
-        <nav class="bg-white border-b border-blue-100 px-6 py-4 sticky top-0 z-10 shadow-sm">
+        <nav class="bg-purple-950/80 border-b border-purple-500 px-6 py-4 sticky top-0 z-10 backdrop-blur-md">
             <div class="max-w-md mx-auto flex justify-between items-center">
-                <span class="text-xl font-bold text-blue-700"><i class="fas fa-droplet mr-2"></i>ทริปเฟอร์ AI 🔋</span>
-                <button onclick="logout()" class="text-red-500 text-sm font-bold"><i class="fas fa-sign-out-alt"></i></button>
+                <span class="text-xl font-bold purple-neon"><i class="fas fa-tv mr-2"></i>ทริปเฟอร์ AI</span>
+                <button onclick="logout()" class="text-purple-300 text-sm font-bold border border-purple-500 px-3 py-1 rounded-lg">ออกระบบ</button>
             </div>
         </nav>
 
         <main class="p-6 flex flex-col items-center pt-8">
-            <div class="w-full max-w-md bg-white rounded-[2rem] shadow-xl border border-blue-50 overflow-hidden">
-                <div class="bg-gradient-to-r from-blue-600 to-sky-500 p-8 text-white text-center">
-                    <h2 class="text-xl font-bold italic" id="welcomeMsg">สวัสดีครับช่าง!</h2>
-                    <p class="text-xs opacity-80 mt-1 uppercase tracking-widest">Voice Control Active 🎙️</p>
+            <div class="w-full max-w-md glass-purple rounded-[2rem] overflow-hidden shadow-2xl">
+                <div class="bg-gradient-to-br from-purple-800 to-indigo-900 p-10 text-center relative">
+                    <div class="absolute top-4 right-4 animate-pulse">
+                        <i class="fas fa-signal text-green-400"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold italic mb-2" id="welcomeMsg">สวัสดี ช่าง!</h2>
+                    <p class="text-purple-300 text-xs font-bold uppercase tracking-widest bg-black/30 inline-block px-3 py-1 rounded-full">Personal Page 🟣</p>
                 </div>
                 
                 <div class="p-8 space-y-6">
-                    <div>
-                        <label class="block text-[11px] font-bold text-blue-400 uppercase mb-2">รายละเอียดข้อความ</label>
-                        <textarea id="message" placeholder="พิมพ์ข้อความ หรือ กดไมค์..." rows="4"
-                                  class="w-full p-4 bg-blue-50 border border-blue-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                    <div class="bg-black/20 p-4 rounded-2xl border border-purple-900">
+                        <label class="block text-[10px] font-bold text-purple-400 uppercase mb-2 tracking-widest">สถานะปัจจุบัน</label>
+                        <p class="text-white text-sm" id="userStatus">กำลังรอข้อมูลใหม่จาก... </p>
                     </div>
 
+                    <textarea id="message" placeholder="พิมพ์ข้อความที่ต้องการบันทึก..." rows="4"
+                              class="w-full p-5 bg-purple-950/50 border border-purple-800 rounded-2xl outline-none focus:ring-2 focus:ring-purple-500 resize-none text-white placeholder:text-purple-800"></textarea>
+
                     <div class="flex space-x-3">
-                        <button onclick="startVoice()" class="flex-1 bg-slate-100 text-slate-600 py-4 rounded-2xl hover:bg-slate-200 transition-all active:scale-95">
+                        <button onclick="startVoice()" class="flex-1 bg-purple-900/50 text-purple-300 py-4 rounded-2xl border border-purple-500 hover:bg-purple-800 transition-all">
                             <i class="fas fa-microphone text-xl"></i>
                         </button>
-                        <button onclick="sendData()" class="flex-[3] bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 transition-all active:scale-95">
-                            <i class="fas fa-paper-plane mr-2"></i> บันทึกข้อมูล
+                        <button onclick="sendData()" class="flex-[3] bg-purple-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-purple-900/50 hover:bg-purple-500 transition-all active:scale-95 uppercase tracking-widest">
+                            บันทึกลงคลาวด์ 🔋
                         </button>
                     </div>
-                    <div id="status" class="hidden text-center p-3 rounded-xl text-sm font-medium border animate-pulse"></div>
+                    <div id="status" class="hidden text-center p-4 rounded-2xl text-sm font-bold border border-purple-500 bg-purple-950 shadow-inner"></div>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        let isRegister = false;
         let currentUser = "";
 
-        // 🗣️ ระบบพูด (Speech Synthesis)
         function speak(text) {
             const synth = window.speechSynthesis;
             const utter = new SpeechSynthesisUtterance(text);
@@ -102,35 +112,33 @@ HTML_TEMPLATE = '''
             synth.speak(utter);
         }
 
-        // 🎙️ ระบบฟังเสียง (Speech Recognition)
         function startVoice() {
             const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = 'th-TH';
-            speak("กำลังฟังครับช่าง...");
+            speak("ฟังอยู่ บอกมาเลย");
             recognition.start();
             recognition.onresult = (event) => {
                 document.getElementById('message').value = event.results[0][0].transcript;
-                speak("รับทราบครับ");
+                speak("รับทราบ");
             };
         }
 
-        function toggleAuthMode() {
-            isRegister = !isRegister;
-            document.getElementById('formTitle').innerText = isRegister ? "ลงทะเบียน ทริปเฟอร์ AI" : "เข้าสู่ระบบ ทริปเฟอร์ AI";
-            document.getElementById('toggleText').innerText = isRegister ? "กลับไปหน้า Login" : "ลงทะเบียนที่นี่";
-        }
-
-        function handleAuth() {
+        function handleLogin() {
             const user = document.getElementById('authName').value;
             const pass = document.getElementById('authPass').value;
-            if(!user || !pass) { alert("กรอกข้อมูลให้ครบครับ"); return; }
             
-            // ระบบง่ายๆ (สามารถเปลี่ยนเป็นเช็ค DB จริงได้)
+            if(!user || !pass) { alert("ใส่ชื่อกับรหัสด้วย!"); return; }
+            
+            // ล็อคอินปุ๊บ เปลี่ยนหน้าทันที
             currentUser = user;
             document.getElementById('loginPage').classList.add('hidden-page');
             document.getElementById('mainPage').classList.remove('hidden-page');
-            document.getElementById('welcomeMsg').innerText = "สวัสดีครับ " + currentUser;
-            speak("ยินดีต้อนรับเข้าสู่ระบบ ทริปเฟอร์ AI ครับคุณ " + currentUser);
+            
+            // หน้าเฉพาะคน: โชว์ชื่อคนล็อคอิน
+            document.getElementById('welcomeMsg').innerText = "สวัสดี " + currentUser;
+            document.getElementById('userStatus').innerText = "หน้าส่วนตัวของ: " + currentUser;
+            
+            speak("เข้าสู่ระบบแล้ว ยินดีต้อนรับ " + currentUser);
         }
 
         async function sendData() {
@@ -138,7 +146,7 @@ HTML_TEMPLATE = '''
             const status = document.getElementById('status');
             if(!msg) return;
 
-            status.innerText = "กำลังบันทึก...";
+            status.innerText = "กำลังยิงข้อมูล...";
             status.classList.remove('hidden');
 
             try {
@@ -149,12 +157,12 @@ HTML_TEMPLATE = '''
                 });
                 const data = await res.json();
                 if(data.status === 'success') {
-                    status.innerText = "🔋 บันทึกถาวรเรียบร้อย!";
-                    speak("บันทึกข้อมูลเรียบร้อยแล้วครับ");
+                    status.innerText = "🔋 บันทึกเรียบร้อย!";
+                    speak("เก็บข้อมูลให้แล้ว");
                     document.getElementById('message').value = "";
                 }
             } catch (e) {
-                status.innerText = "เกิดข้อผิดพลาด!";
+                status.innerText = "พัง! เชื่อมต่อไม่ได้";
             }
         }
 
@@ -177,13 +185,13 @@ def submit():
 
     if name and message:
         try:
-            # 1. บันทึกลง Google Sheets (Backup)
+            # บันทึกลง Google Sheets
             payload = {"entry.1691238515": name, "entry.540166297": message}
             requests.post(FORM_URL, data=payload)
 
-            # 2. แจ้งเตือน LINE
+            # แจ้งเตือน LINE
             if LINE_ACCESS_TOKEN and USER_ID:
-                text = f"🔋 [ทริปเฟอร์ AI]\n👤 ผู้ใช้งาน: {name}\n💬: {message}\n⏰: {time_now}"
+                text = f"🟣 [ทริปเฟอร์ AI]\n👤 ช่าง: {name}\n💬: {message}\n⏰: {time_now}"
                 requests.post('https://api.line.me/v2/bot/message/push', 
                              headers={'Authorization': f'Bearer {LINE_ACCESS_TOKEN}', 'Content-Type': 'application/json'},
                              json={'to': USER_ID, 'messages': [{'type': 'text', 'text': text}]})
