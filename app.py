@@ -10,7 +10,7 @@ LINE_ACCESS_TOKEN = os.environ.get('LINE_TOKEN')
 USER_ID = os.environ.get('LINE_USER_ID')
 FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeuSJ5qyiHYO8_atM412MZkqlGDbOY0lk0PY5L2M1CjNh7A3A/formResponse"
 
-# --- 🎨 UI TV MAN ANDROID - 3 OPTIONS EDITION ---
+# --- 🎨 UI TV MAN ANDROID - SECURITY LOCK ---
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html lang="th">
@@ -18,35 +18,40 @@ HTML_TEMPLATE = '''
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0c001a">
-    <title>ทริปเฟอร์ AI - WORKSPACE 📺</title>
+    <title>ทริปเฟ84 AI - SECURE 📺</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
         body { font-family: 'Kanit', sans-serif; background: #000; color: white; -webkit-tap-highlight-color: transparent; }
         .purple-neon { text-shadow: 0 0 10px #bf40bf, 0 0 20px #bf40bf; }
-        .glass-purple { background: rgba(20, 0, 40, 0.8); backdrop-filter: blur(20px); border: 1px solid #4c1d95; }
+        .glass-purple { background: rgba(20, 0, 40, 0.85); backdrop-filter: blur(20px); border: 1px solid #5b21b6; }
         .hidden-page { display: none; }
         .option-card { background: linear-gradient(145deg, #1e1b4b, #0c001a); border: 2px solid #5b21b6; transition: all 0.3s; }
-        .option-card:active { transform: scale(0.95); border-color: #a78bfa; background: #2e1065; }
-        .tv-glow { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+        .option-card:active { transform: scale(0.95); }
     </style>
 </head>
 <body class="min-h-screen">
 
     <div id="loginPage" class="flex items-center justify-center min-h-screen p-6">
-        <div class="w-full max-w-md glass-purple p-8 rounded-[2.5rem] shadow-2xl">
-            <div class="text-center mb-10">
-                <div class="w-20 h-16 bg-purple-900/20 rounded-lg mx-auto mb-4 border-2 border-purple-500 flex items-center justify-center tv-glow">
-                    <i class="fas fa-desktop text-purple-400 text-2xl"></i>
-                </div>
+        <div class="w-full max-w-md glass-purple p-10 rounded-[2.5rem] shadow-2xl text-center border-t-4 border-purple-600">
+            <div class="mb-8">
+                <i class="fas fa-shield-halved text-purple-500 text-5xl mb-4 animate-pulse"></i>
                 <h1 class="text-3xl font-bold purple-neon">ทริปเฟอร์ AI</h1>
-                <p class="text-purple-500 text-[10px] uppercase tracking-widest mt-2">Android System V.2</p>
+                <p class="text-purple-400 text-[10px] uppercase tracking-widest mt-2">Security Verification</p>
             </div>
-            <div class="space-y-4">
-                <input type="text" id="authName" placeholder="ชื่อช่าง" class="w-full p-4 bg-purple-950/50 border border-purple-800 rounded-2xl outline-none focus:border-purple-400 text-white">
-                <input type="password" id="authPass" placeholder="รหัสผ่าน" class="w-full p-4 bg-purple-950/50 border border-purple-800 rounded-2xl outline-none focus:border-purple-400 text-white">
-                <button onclick="handleLogin()" class="w-full bg-purple-600 py-5 rounded-2xl font-bold shadow-lg active:scale-95 transition-all uppercase tracking-widest">เปิดหน้าจอ 📺</button>
+            
+            <div class="space-y-4 text-left">
+                <div class="space-y-1">
+                    <label class="text-[10px] text-purple-400 font-bold ml-2 uppercase">ชื่อผู้ใช้งาน</label>
+                    <input type="text" id="authName" placeholder="ระบุชื่อช่าง" class="w-full p-4 bg-black/60 border border-purple-900 rounded-2xl outline-none focus:border-purple-400 text-white">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] text-purple-400 font-bold ml-2 uppercase">รหัสผ่านลับ</label>
+                    <input type="password" id="authPass" placeholder="•••••" class="w-full p-4 bg-black/60 border border-purple-900 rounded-2xl outline-none focus:border-purple-400 text-white text-center tracking-[1em]">
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-purple-600 hover:bg-purple-500 py-5 rounded-2xl font-bold shadow-lg active:scale-95 transition-all uppercase tracking-widest mt-4">ปลดล็อคระบบ 📺</button>
+                <p id="loginError" class="hidden text-red-500 text-center text-xs font-bold mt-2 animate-bounce">❌ รหัสผิด! ลองใหม่นะช่าง</p>
             </div>
         </div>
     </div>
@@ -54,43 +59,24 @@ HTML_TEMPLATE = '''
     <div id="mainPage" class="hidden-page flex flex-col min-h-screen">
         <nav class="p-5 flex justify-between items-center glass-purple sticky top-0 z-50">
             <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center shadow-lg"><i class="fas fa-user-gear text-white text-xs"></i></div>
-                <span class="font-bold purple-neon" id="navName">ช่าง TOP</span>
+                <div class="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center"><i class="fas fa-check-shield text-white text-xs"></i></div>
+                <span class="font-bold purple-neon" id="navName">ONLINE</span>
             </div>
             <button onclick="logout()" class="text-purple-400 p-2"><i class="fas fa-power-off"></i></button>
         </nav>
 
         <main class="p-6 space-y-4 max-w-md mx-auto w-full">
-            <h2 class="text-sm font-bold text-purple-400 uppercase tracking-widest mb-2 ml-1">เลือกโหมดการทำงาน</h2>
-            
             <div onclick="openWorkPage()" class="option-card p-6 rounded-[2rem] flex items-center space-x-5 shadow-xl">
-                <div class="w-14 h-14 bg-purple-800 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
-                    <i class="fas fa-pen-nib text-white"></i>
-                </div>
-                <div>
-                    <h3 class="font-bold text-lg">บันทึกหน้างาน</h3>
-                    <p class="text-xs text-purple-400">ส่งข้อมูลเข้า Google Sheets</p>
-                </div>
+                <div class="w-14 h-14 bg-purple-800 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-pen-nib text-white"></i></div>
+                <div><h3 class="font-bold text-lg">บันทึกหน้างาน</h3><p class="text-xs text-purple-400">ส่งข้อมูลเข้า Sheets</p></div>
             </div>
-
-            <div onclick="alert('ระบบกำลังซิงค์คลาวด์... 🔋')" class="option-card p-6 rounded-[2rem] flex items-center space-x-5 shadow-xl opacity-80">
-                <div class="w-14 h-14 bg-indigo-800 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
-                    <i class="fas fa-database text-white"></i>
-                </div>
-                <div>
-                    <h3 class="font-bold text-lg">สถานะเซิร์ฟเวอร์</h3>
-                    <p class="text-xs text-indigo-400">ตรวจสอบการเชื่อมต่อ</p>
-                </div>
+            <div onclick="alert('ระบบคลาวด์ปกติ 🔋')" class="option-card p-6 rounded-[2rem] flex items-center space-x-5 shadow-xl opacity-80">
+                <div class="w-14 h-14 bg-indigo-800 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-database text-white"></i></div>
+                <div><h3 class="font-bold text-lg">สถานะเซิร์ฟเวอร์</h3><p class="text-xs text-indigo-400">Cloud Online</p></div>
             </div>
-
-            <div onclick="alert('กำลังเปิดสายด่วนแอดมิน... 📞')" class="option-card p-6 rounded-[2rem] flex items-center space-x-5 shadow-xl opacity-80">
-                <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
-                    <i class="fas fa-headset text-white"></i>
-                </div>
-                <div>
-                    <h3 class="font-bold text-lg">ติดต่อแอดมิน</h3>
-                    <p class="text-xs text-slate-400">ขอความช่วยเหลือด่วน</p>
-                </div>
+            <div onclick="alert('โทร 191... ล้อเล่นครับ 📞')" class="option-card p-6 rounded-[2rem] flex items-center space-x-5 shadow-xl opacity-80">
+                <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-headset text-white"></i></div>
+                <div><h3 class="font-bold text-lg">ติดต่อแอดมิน</h3><p class="text-xs text-slate-400">Support 24h</p></div>
             </div>
         </main>
     </div>
@@ -98,14 +84,14 @@ HTML_TEMPLATE = '''
     <div id="workPage" class="hidden-page flex flex-col min-h-screen">
         <nav class="p-5 flex items-center space-x-4 glass-purple sticky top-0 z-50">
             <button onclick="backToMain()" class="text-purple-400 text-xl"><i class="fas fa-chevron-left"></i></button>
-            <span class="font-bold purple-neon uppercase tracking-widest">บันทึกหน้างาน</span>
+            <span class="font-bold purple-neon uppercase tracking-widest">บันทึกข้อมูล</span>
         </nav>
         <main class="p-6 space-y-6 max-w-md mx-auto w-full">
-            <div class="glass-purple p-6 rounded-[2.5rem] space-y-4 shadow-2xl border-b-4 border-purple-500">
+            <div class="glass-purple p-6 rounded-[2.5rem] space-y-4 shadow-2xl">
                 <textarea id="message" placeholder="พิมพ์รายงาน..." rows="6" class="w-full p-5 bg-black/50 border border-purple-900 rounded-2xl outline-none focus:border-purple-400 text-white resize-none"></textarea>
                 <div class="grid grid-cols-4 gap-2">
                     <button onclick="startVoice()" class="bg-purple-900/50 border border-purple-500 rounded-2xl text-purple-300 py-4"><i class="fas fa-microphone text-xl"></i></button>
-                    <button onclick="sendData()" class="col-span-3 bg-purple-600 py-4 rounded-2xl font-bold uppercase tracking-widest active:scale-95">บันทึก 🔋</button>
+                    <button onclick="sendData()" class="col-span-3 bg-purple-600 py-4 rounded-2xl font-bold active:scale-95 transition-all">ส่งข้อมูล 🔋</button>
                 </div>
                 <div id="status" class="hidden text-center p-3 rounded-xl text-[10px] font-bold border border-purple-500 bg-purple-950"></div>
             </div>
@@ -113,28 +99,30 @@ HTML_TEMPLATE = '''
     </div>
 
     <script>
+        // 🔑 ตั้งรหัสผ่านที่นี่!
+        const REAL_PASS = "11384"; 
         let currentUser = "";
 
-        // 🧠 ระบบเช็คสถานะ Android (เด้งเข้าหน้าอัตโนมัติ)
         document.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('tripfer_user');
             if (savedUser) showMainPage(savedUser);
         });
 
-        function speak(text) {
-            const synth = window.speechSynthesis;
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = 'th-TH';
-            synth.speak(utter);
-        }
-
         function handleLogin() {
             const user = document.getElementById('authName').value;
             const pass = document.getElementById('authPass').value;
-            if(!user || !pass) return;
-            localStorage.setItem('tripfer_user', user);
-            showMainPage(user);
-            speak("เข้าหน้าจอแล้วนะ " + user);
+            const errorMsg = document.getElementById('loginError');
+
+            // 🛡️ ตรวจสอบรหัสผ่านจริง
+            if(pass === REAL_PASS) {
+                localStorage.setItem('tripfer_user', user);
+                showMainPage(user);
+                speak("ยินดีต้อนรับกลับมา");
+                errorMsg.classList.add('hidden');
+            } else {
+                errorMsg.classList.remove('hidden');
+                speak("รหัสผิดนะ");
+            }
         }
 
         function showMainPage(user) {
@@ -153,6 +141,13 @@ HTML_TEMPLATE = '''
         function backToMain() {
             document.getElementById('workPage').classList.add('hidden-page');
             document.getElementById('mainPage').classList.remove('hidden-page');
+        }
+
+        function speak(text) {
+            const synth = window.speechSynthesis;
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'th-TH';
+            synth.speak(utter);
         }
 
         function startVoice() {
